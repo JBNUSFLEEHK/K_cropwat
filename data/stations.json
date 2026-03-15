@@ -1,0 +1,202 @@
+[
+    {
+        "id": "90",
+        "name": "속초",
+        "name_en": "Sokcho",
+        "lat": 38.2508,
+        "lon": 128.5644,
+        "region": "강원"
+    },
+    {
+        "id": "100",
+        "name": "대관령",
+        "name_en": "Daegwallyeong",
+        "lat": 37.6769,
+        "lon": 128.7181,
+        "region": "강원"
+    },
+    {
+        "id": "101",
+        "name": "춘천",
+        "name_en": "Chuncheon",
+        "lat": 37.9022,
+        "lon": 127.7358,
+        "region": "강원"
+    },
+    {
+        "id": "105",
+        "name": "강릉",
+        "name_en": "Gangneung",
+        "lat": 37.7514,
+        "lon": 128.8908,
+        "region": "강원"
+    },
+    {
+        "id": "108",
+        "name": "서울",
+        "name_en": "Seoul",
+        "lat": 37.5714,
+        "lon": 126.9658,
+        "region": "서울"
+    },
+    {
+        "id": "112",
+        "name": "인천",
+        "name_en": "Incheon",
+        "lat": 37.4778,
+        "lon": 126.6250,
+        "region": "인천"
+    },
+    {
+        "id": "114",
+        "name": "원주",
+        "name_en": "Wonju",
+        "lat": 37.3372,
+        "lon": 127.9456,
+        "region": "강원"
+    },
+    {
+        "id": "119",
+        "name": "수원",
+        "name_en": "Suwon",
+        "lat": 37.2728,
+        "lon": 126.9869,
+        "region": "경기"
+    },
+    {
+        "id": "131",
+        "name": "청주",
+        "name_en": "Cheongju",
+        "lat": 36.6394,
+        "lon": 127.4407,
+        "region": "충북"
+    },
+    {
+        "id": "133",
+        "name": "대전",
+        "name_en": "Daejeon",
+        "lat": 36.3688,
+        "lon": 127.3742,
+        "region": "대전"
+    },
+    {
+        "id": "135",
+        "name": "추풍령",
+        "name_en": "Chupungnyeong",
+        "lat": 36.2181,
+        "lon": 127.9944,
+        "region": "충북"
+    },
+    {
+        "id": "136",
+        "name": "안동",
+        "name_en": "Andong",
+        "lat": 36.5731,
+        "lon": 128.7072,
+        "region": "경북"
+    },
+    {
+        "id": "138",
+        "name": "포항",
+        "name_en": "Pohang",
+        "lat": 36.0328,
+        "lon": 129.3794,
+        "region": "경북"
+    },
+    {
+        "id": "140",
+        "name": "군산",
+        "name_en": "Gunsan",
+        "lat": 36.0017,
+        "lon": 126.7631,
+        "region": "전북"
+    },
+    {
+        "id": "143",
+        "name": "대구",
+        "name_en": "Daegu",
+        "lat": 35.8850,
+        "lon": 128.6189,
+        "region": "대구"
+    },
+    {
+        "id": "146",
+        "name": "전주",
+        "name_en": "Jeonju",
+        "lat": 35.8214,
+        "lon": 127.1555,
+        "region": "전북"
+    },
+    {
+        "id": "152",
+        "name": "울산",
+        "name_en": "Ulsan",
+        "lat": 35.5600,
+        "lon": 129.3200,
+        "region": "울산"
+    },
+    {
+        "id": "155",
+        "name": "창원",
+        "name_en": "Changwon",
+        "lat": 35.2281,
+        "lon": 128.6811,
+        "region": "경남"
+    },
+    {
+        "id": "156",
+        "name": "광주",
+        "name_en": "Gwangju",
+        "lat": 35.1728,
+        "lon": 126.8914,
+        "region": "광주"
+    },
+    {
+        "id": "159",
+        "name": "부산",
+        "name_en": "Busan",
+        "lat": 35.1042,
+        "lon": 129.0322,
+        "region": "부산"
+    },
+    {
+        "id": "162",
+        "name": "통영",
+        "name_en": "Tongyeong",
+        "lat": 34.8453,
+        "lon": 128.4344,
+        "region": "경남"
+    },
+    {
+        "id": "165",
+        "name": "목포",
+        "name_en": "Mokpo",
+        "lat": 34.8169,
+        "lon": 126.3811,
+        "region": "전남"
+    },
+    {
+        "id": "168",
+        "name": "여수",
+        "name_en": "Yeosu",
+        "lat": 34.7392,
+        "lon": 127.7406,
+        "region": "전남"
+    },
+    {
+        "id": "184",
+        "name": "제주",
+        "name_en": "Jeju",
+        "lat": 33.5136,
+        "lon": 126.5294,
+        "region": "제주"
+    },
+    {
+        "id": "192",
+        "name": "진주",
+        "name_en": "Jinju",
+        "lat": 35.1631,
+        "lon": 128.0364,
+        "region": "경남"
+    }
+]

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}CROPWAT - 입력{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">🌾 작물 관개 계획 입력</h4>
+    </div>
+    <div class="card-body">
+        <form action="/calculate" method="post">
+            <!-- 기상대 선택 -->
+            <div class="mb-4">
+                <label for="station" class="form-label fw-bold">📍 기상 관측소</label>
+                <select class="form-select form-select-lg" id="station" name="station_id" required>
+                    <option value="">-- 기상대를 선택하세요 --</option>
+                    {% for station in stations %}
+                    <option value="{{ station.id }}">
+                        {{ station.name }} ({{ station.region }})
+                    </option>
+                    {% endfor %}
+                </select>
+                <small class="form-text text-muted">재배지와 가장 가까운 기상대를 선택하세요</small>
+            </div>
+
+            <!-- 작물 선택 -->
+            <div class="mb-4">
+                <label for="crop" class="form-label fw-bold">🌱 작물 종류</label>
+                <select class="form-select form-select-lg" id="crop" name="crop_id" required>
+                    <option value="">-- 작물을 선택하세요 --</option>
+                    {% for crop in crops %}
+                    <option value="{{ crop.id }}">
+                        {{ crop.name }} ({{ crop.name_en }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- 토양 선택 -->
+            <div class="mb-4">
+                <label for="soil" class="form-label fw-bold">🏞️ 토양 종류</label>
+                <select class="form-select form-select-lg" id="soil" name="soil_id" required>
+                    <option value="">-- 토양을 선택하세요 --</option>
+                    {% for soil in soils %}
+                    <option value="{{ soil.id }}">
+                        {{ soil.name }} ({{ soil.name_en }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- 재배 기간 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="planting_date" class="form-label fw-bold">📅 파종일 (재배 시작일)</label>
+                    <input type="date" class="form-control form-control-lg"
+                           id="planting_date" name="planting_date" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="harvest_date" class="form-label fw-bold">📅 수확일 (재배 종료일)</label>
+                    <input type="date" class="form-control form-control-lg"
+                           id="harvest_date" name="harvest_date" required>
+                </div>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    💧 관개 계획 계산하기
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 안내 사항 -->
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">ℹ️ 사용 안내</h5>
+        <ul>
+            <li>기상 관측소는 재배지와 가장 가까운 곳을 선택하세요</li>
+            <li>재배 기간은 실제 파종일과 수확 예정일을 입력하세요</li>
+            <li>계산 결과는 FAO-56 표준 방법을 기반으로 합니다</li>
+            <li>과거 기상 데이터를 사용하므로 재배 기간의 기상 데이터가 있어야 합니다</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

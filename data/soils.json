@@ -1,0 +1,52 @@
+[
+    {
+        "id": "sandy",
+        "name": "사토",
+        "name_en": "Sand",
+        "fc": 0.12,
+        "pwp": 0.045,
+        "tam": 50,
+        "infiltration_rate": 50,
+        "reference": "FAO-56 Table 19"
+    },
+    {
+        "id": "loamy_sand",
+        "name": "사질양토",
+        "name_en": "Loamy Sand",
+        "fc": 0.15,
+        "pwp": 0.065,
+        "tam": 70,
+        "infiltration_rate": 40,
+        "reference": "FAO-56 Table 19"
+    },
+    {
+        "id": "loam",
+        "name": "양토",
+        "name_en": "Loam",
+        "fc": 0.25,
+        "pwp": 0.12,
+        "tam": 140,
+        "infiltration_rate": 30,
+        "reference": "FAO-56 Table 19"
+    },
+    {
+        "id": "silt_clay_loam",
+        "name": "미사질식양토",
+        "name_en": "Silt Clay Loam",
+        "fc": 0.335,
+        "pwp": 0.205,
+        "tam": 130,
+        "infiltration_rate": 20,
+        "reference": "FAO-56 Table 19"
+    },
+    {
+        "id": "clay",
+        "name": "식토",
+        "name_en": "Clay",
+        "fc": 0.36,
+        "pwp": 0.22,
+        "tam": 140,
+        "infiltration_rate": 10,
+        "reference": "FAO-56 Table 19"
+    }
+]
