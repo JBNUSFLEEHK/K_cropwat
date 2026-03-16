@@ -7,8 +7,14 @@
     <div class="card-header bg-primary text-white">
         <h4 class="mb-0">🌾 작물 관개 계획 입력</h4>
     </div>
-    <div class="card-body">
-        <form action="/calculate" method="post">
+<div class="card-body">
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
+    <form action="/calculate" method="post">
             <!-- 기상대 선택 -->
             <div class="mb-4">
                 <label for="station" class="form-label fw-bold">📍 기상 관측소</label>
@@ -85,4 +91,29 @@
         </ul>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const plantingDateInput = document.getElementById("planting_date");
+    const harvestDateInput = document.getElementById("harvest_date");
+
+    const today = new Date().toISOString().split("T")[0];
+
+    // 미래 날짜 선택 방지
+    plantingDateInput.max = today;
+    harvestDateInput.max = today;
+
+    // 파종일 선택 시 수확일 최소값 설정
+    plantingDateInput.addEventListener("change", function () {
+        harvestDateInput.min = plantingDateInput.value;
+
+        // 수확일이 파종일보다 빠르면 초기화
+        if (harvestDateInput.value && harvestDateInput.value < plantingDateInput.value) {
+            harvestDateInput.value = "";
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 import json
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 # 우리가 만든 계산 모듈들
 from services.station_service import get_station_by_id, get_all_stations
@@ -58,11 +58,35 @@ async def calculate(
     """CROPWAT 계산 실행"""
 
     try:
-        # 1. 데이터 로드
-        station = get_station_by_id(station_id)
+        # 0. 날짜 검증
+        stations = load_json_data("stations.json")
         crops = load_json_data("crops.json")
         soils = load_json_data("soils.json")
 
+        planting = datetime.strptime(planting_date, "%Y-%m-%d").date()
+        harvest = datetime.strptime(harvest_date, "%Y-%m-%d").date()
+        today = date.today()
+
+        if planting > today or harvest > today:
+            return templates.TemplateResponse("index.html", {
+                "request": request,
+                "stations": stations,
+                "crops": crops,
+                "soils": soils,
+                "error_message": "미래 날짜는 입력할 수 없습니다."
+            })
+
+        if harvest < planting:
+            return templates.TemplateResponse("index.html", {
+                "request": request,
+                "stations": stations,
+                "crops": crops,
+                "soils": soils,
+                "error_message": "수확일은 파종일보다 빠를 수 없습니다."
+            })
+
+        # 1. 데이터 로드
+        station = get_station_by_id(station_id)
         crop = get_data_by_id(crops, crop_id)
         soil = get_data_by_id(soils, soil_id)
 
