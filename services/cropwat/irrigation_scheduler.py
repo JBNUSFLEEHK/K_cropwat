@@ -43,7 +43,7 @@ class IrrigationScheduler:
         self.rooting_depth = (crop_data['rooting_depth_min'] + crop_data['rooting_depth_max']) / 2
 
         # 총유효수분 (mm)
-        self.TAW = self.tam * self.rooting_depth / 1000  # mm/m → mm
+        self.TAW = self.tam * self.rooting_depth  # mm/m × m = mm
 
         # 관개 임계점 (Readily Available Water)
         p = crop_data.get('critical_depletion', 0.5)  # 기본값 50%
@@ -104,7 +104,7 @@ class IrrigationScheduler:
             irrigation = 0
             net_irrigation = 0
 
-            if current_depletion >= (self.RAW * self.options['depletion_level']):
+            if current_depletion >= self.RAW:
                 # 관개 필요!
                 if self.options['application'] == 'refill_to_fc':
                     # 포장용수량까지 채우기
