@@ -201,7 +201,8 @@
         </div>
         <p class="mb-0 mt-2"><small class="text-muted">
             Field Capacity(고갈 0mm)를 기준으로 토양수분 고갈량이 RAM에 도달하면 관개가 이뤄져
-            다시 포장용수량으로 회복됩니다. Days after planting = 파종(정식) 후 경과 일수.
+            다시 포장용수량으로 회복됩니다. RAM·TAM은 뿌리가 자라는 초기에 증가하다 발육기 끝에서
+            평탄해집니다. Days after planting = 재배 시작 후 경과 일수.
         </small></p>
     </div>
 </div>
@@ -229,11 +230,13 @@
 (function () {
     const days = {{ chart_days | tojson }};
     const depletion = {{ chart_depletion | tojson }};
-    const ram = {{ chart_ram }};
-    const tam = {{ chart_tam }};
+    const ram = {{ chart_ram | tojson }};   // 일자별 RAW (뿌리 생장 반영)
+    const tam = {{ chart_tam | tojson }};   // 일자별 TAW (뿌리 생장 반영)
 
     const canvas = document.getElementById('scheduleChart');
     if (!canvas || typeof Chart === 'undefined' || days.length === 0) return;
+
+    const tamMax = Math.max(...tam);
 
     const COLORS = {
         depletion: '#e03131',
@@ -246,9 +249,10 @@
 
     function buildDatasets() {
         const asBar = document.getElementById('asBar').checked;
-        const constLine = (value, color, label) => ({
+        // 상수(Field Capacity) 또는 일자별 배열(RAM/TAM)을 선으로
+        const lineDs = (data, color, label) => ({
             label: label,
-            data: days.map(() => value),
+            data: Array.isArray(data) ? data : days.map(() => data),
             type: 'line',
             borderColor: color,
             backgroundColor: color,
@@ -281,10 +285,10 @@
             };
 
         return [
-            constLine(0, COLORS.fc, 'Field Capacity'),
+            lineDs(0, COLORS.fc, 'Field Capacity'),
             depletionDs,
-            constLine(ram, COLORS.ram, 'RAM'),
-            constLine(tam, COLORS.tam, 'TAM')
+            lineDs(ram, COLORS.ram, 'RAM'),
+            lineDs(tam, COLORS.tam, 'TAM')
         ];
     }
 
@@ -298,7 +302,7 @@
 
     function buildChart() {
         if (chart) chart.destroy();
-        const headroom = Math.max(2, tam * 0.05);
+        const headroom = Math.max(2, tamMax * 0.05);
         chart = new Chart(canvas, {
             type: 'bar',
             data: { labels: days, datasets: buildDatasets() },
@@ -311,7 +315,7 @@
                     y: {
                         reverse: true,
                         min: -headroom,
-                        suggestedMax: tam * 1.1,
+                        suggestedMax: tamMax * 1.1,
                         title: { display: true, text: 'Soil water retention in mm' }
                     },
                     x: {

@@ -39,17 +39,41 @@ class IrrigationScheduler:
         self.pwp = soil_data['pwp']  # Permanent Wilting Point (영구위조점)
         self.tam = soil_data['tam']  # Total Available Moisture (총유효수분, mm/m)
 
-        # 작물 뿌리 깊이 (평균값 사용)
-        self.rooting_depth = (crop_data['rooting_depth_min'] + crop_data['rooting_depth_max']) / 2
+        # 작물 뿌리 깊이 (생육에 따라 최소→최대로 자람, FAO-56)
+        self.rooting_depth_min = crop_data['rooting_depth_min']  # 정식/파종 직후 (m)
+        self.rooting_depth_max = crop_data['rooting_depth_max']  # 최대 (m)
 
-        # 총유효수분 (mm)
-        self.TAW = self.tam * self.rooting_depth  # mm/m × m = mm
+        # 뿌리가 최대 깊이에 도달하는 날 = 발육기 끝 (초기일수 + 발육일수)
+        self.root_max_day = crop_data['stage_init_days'] + crop_data['stage_dev_days']
 
-        # 관개 임계점 (Readily Available Water)
-        # p: 작물 고유 임계 고갈률(critical depletion / MAD). 값이 작을수록 수분
-        # 스트레스에 민감 → 더 이른(토양이 덜 마른) 시점에 관개
+        # 관개 임계 고갈률 (critical depletion / MAD)
+        # p: 작물 고유값. 값이 작을수록 수분 스트레스에 민감 → 더 이른 시점에 관개
         self.depletion_fraction = crop_data.get('critical_depletion', 0.5)  # 기본값 50%
-        self.RAW = self.TAW * self.depletion_fraction
+
+        # 대표값 (재배 초기 기준) — 하위 호환/요약용
+        self.rooting_depth = self.rooting_depth_min
+        self.TAW = self.taw_at(0)
+        self.RAW = self.raw_at(0)
+
+    def rooting_depth_at(self, day_index: int) -> float:
+        """
+        재배 시작 후 경과 일수에 따른 유효 뿌리 깊이 (m)
+
+        정식/파종 시점(day 0)의 최소 깊이에서 선형 증가하여 발육기 끝에
+        최대 깊이에 도달한 뒤 그대로 유지된다 (FAO-56).
+        """
+        if self.root_max_day <= 0:
+            return self.rooting_depth_max
+        frac = min(1.0, day_index / self.root_max_day)
+        return self.rooting_depth_min + (self.rooting_depth_max - self.rooting_depth_min) * frac
+
+    def taw_at(self, day_index: int) -> float:
+        """해당 일자의 총유효수분 TAW (mm) = TAM(mm/m) × Zr(m)"""
+        return self.tam * self.rooting_depth_at(day_index)
+
+    def raw_at(self, day_index: int) -> float:
+        """해당 일자의 즉시유효수분 RAW (mm) = p × TAW"""
+        return self.taw_at(day_index) * self.depletion_fraction
 
     def calculate_irrigation_schedule(
             self,
@@ -92,6 +116,10 @@ class IrrigationScheduler:
             # 유효강수량 계산 (FAO-56 방법)
             eff_rain = self._calculate_effective_rainfall(rain)
 
+            # 오늘의 뿌리 깊이에 따른 TAW/RAW (뿌리 생장 반영)
+            taw_day = self.taw_at(i)
+            raw_day = self.raw_at(i)
+
             # 전날의 고갈량
             prev_depletion = current_depletion
 
@@ -99,24 +127,24 @@ class IrrigationScheduler:
             current_depletion = prev_depletion + etc - eff_rain
             current_depletion = max(0, current_depletion)  # 음수 방지
 
-            # 고갈률 (%)
-            depl_percent = (current_depletion / self.TAW) * 100 if self.TAW > 0 else 0
+            # 고갈률 (%) — 그날의 TAW 기준
+            depl_percent = (current_depletion / taw_day) * 100 if taw_day > 0 else 0
 
             # 관개 리셋 직전(당일 관개 판단 전)의 고갈량 — 그래프의 톱니 꼭짓점용
             depletion_before = current_depletion
 
-            # 관개 필요 여부 판단
+            # 관개 필요 여부 판단 — 그날의 RAW 임계값
             irrigation = 0
             net_irrigation = 0
 
-            if current_depletion >= self.RAW:
+            if current_depletion >= raw_day:
                 # 관개 필요!
                 if self.options['application'] == 'refill_to_fc':
                     # 포장용수량까지 채우기
                     net_irrigation = current_depletion
                 else:
                     # 고정량 관개
-                    net_irrigation = self.RAW
+                    net_irrigation = raw_day
 
                 # 현장 효율 고려
                 irrigation = net_irrigation / (self.options['field_efficiency'] / 100)
@@ -137,7 +165,9 @@ class IrrigationScheduler:
                 'depletion_before': round(depletion_before, 1),
                 'depl_percent': round(depl_percent, 1),
                 'irrigation': round(irrigation, 1),
-                'net_irrigation': round(net_irrigation, 1)
+                'net_irrigation': round(net_irrigation, 1),
+                'taw': round(taw_day, 1),
+                'raw': round(raw_day, 1)
             })
 
         return results
