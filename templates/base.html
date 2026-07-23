@@ -15,21 +15,42 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
     <!-- Custom CSS -->
     <style>
+        :root {
+            --accent: #2f6f4f;
+            --accent-dark: #234f39;
+            --ink: #212529;
+            --muted: #6c757d;
+            --surface: #ffffff;
+            --surface-muted: #f7f8f6;
+        }
+
         body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--surface-muted);
+            color: var(--ink);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+
+        h1, h2, h3, h4, h5, h6,
+        .navbar-brand, .btn, .card-header-clean {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
         }
 
         .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--accent-dark);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
         }
 
         .navbar-brand {
-            font-weight: bold;
-            font-size: 1.5rem;
+            font-weight: 700;
+            font-size: 1.35rem;
+            letter-spacing: 0.02em;
         }
 
         .main-container {
@@ -40,45 +61,75 @@
 
         .card {
             border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.075);
             margin-bottom: 20px;
         }
 
-        .card-header {
-            border-radius: 15px 15px 0 0 !important;
-            font-weight: 600;
-            font-size: 1.2rem;
+        .card-header-clean {
+            background: var(--surface);
+            border-bottom: 1px solid #eceeec;
+            border-radius: 8px 8px 0 0;
+            padding: 1rem 1.25rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--ink);
+        }
+
+        .card-header-clean .accent {
+            color: var(--accent);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--accent);
             border: none;
             padding: 10px 30px;
             font-weight: 600;
+            letter-spacing: 0.03em;
+            border-radius: 6px;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transition: all 0.3s;
+            background: var(--accent-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transition: all 0.2s;
         }
 
-        .table-warning {
-            background-color: #fff9c4 !important;
+        .btn-secondary {
+            border-radius: 6px;
+        }
+
+        .table thead th {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            border-bottom-width: 1px;
         }
 
         .badge-danger {
-            background-color: #dc3545;
-            font-size: 1rem;
-            padding: 0.5rem 1rem;
+            background-color: #c0392b;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+        }
+
+        .info-box {
+            background: var(--surface-muted);
+            border: 1px solid #eceeec;
+            border-radius: 8px;
         }
 
         footer {
             margin-top: 50px;
             padding: 20px 0;
             text-align: center;
-            color: #6c757d;
+            color: var(--muted);
             border-top: 1px solid #dee2e6;
         }
     </style>
@@ -105,12 +156,15 @@
 
     <!-- Footer -->
     <footer>
-        <p class="mb-0">© 2024 CROPWAT Web Service | Based on FAO-56 Standards</p>
-        <small>Jeonbuk National University - Smart Farm Project</small>
+        <p class="mb-0">© 2026 CROPWAT Web Service | Based on FAO-56 Standards</p>
+        <small>Jeonbuk National University - CEP LAB</small>
     </footer>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
     {% block extra_js %}{% endblock %}
 </body>

@@ -46,8 +46,10 @@ class IrrigationScheduler:
         self.TAW = self.tam * self.rooting_depth  # mm/m × m = mm
 
         # 관개 임계점 (Readily Available Water)
-        p = crop_data.get('critical_depletion', 0.5)  # 기본값 50%
-        self.RAW = self.TAW * p
+        # p: 작물 고유 임계 고갈률(critical depletion / MAD). 값이 작을수록 수분
+        # 스트레스에 민감 → 더 이른(토양이 덜 마른) 시점에 관개
+        self.depletion_fraction = crop_data.get('critical_depletion', 0.5)  # 기본값 50%
+        self.RAW = self.TAW * self.depletion_fraction
 
     def calculate_irrigation_schedule(
             self,
@@ -100,6 +102,9 @@ class IrrigationScheduler:
             # 고갈률 (%)
             depl_percent = (current_depletion / self.TAW) * 100 if self.TAW > 0 else 0
 
+            # 관개 리셋 직전(당일 관개 판단 전)의 고갈량 — 그래프의 톱니 꼭짓점용
+            depletion_before = current_depletion
+
             # 관개 필요 여부 판단
             irrigation = 0
             net_irrigation = 0
@@ -129,6 +134,7 @@ class IrrigationScheduler:
                 'etc': round(etc, 2),
                 'eff_rain': round(eff_rain, 1),
                 'depletion': round(current_depletion, 1),
+                'depletion_before': round(depletion_before, 1),
                 'depl_percent': round(depl_percent, 1),
                 'irrigation': round(irrigation, 1),
                 'net_irrigation': round(net_irrigation, 1)

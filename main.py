@@ -154,9 +154,14 @@ async def calculate(
             "cwr_data": cwr_data,
             "irrigation_events": irrigation_events,
             "summary": summary,
+            # 관개 스케줄 그래프용 데이터
+            "chart_days": [row['day'] for row in schedule],
+            "chart_depletion": [row['depletion_before'] for row in schedule],
+            "chart_ram": round(scheduler.RAW, 1),
+            "chart_tam": round(scheduler.TAW, 1),
             "yield_reduction": 0.0,  # 나중에 계산
             "options": {
-                "depletion_level": 80,
+                "depletion_level": round(scheduler.depletion_fraction * 100),
                 "application": "Refill to field capacity",
                 "field_efficiency": 70
             }

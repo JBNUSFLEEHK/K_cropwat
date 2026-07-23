@@ -5,14 +5,14 @@
 {% block content %}
 <!-- CWR 결과 카드 -->
 <div class="card">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">🌱 Crop Water Requirements (CWR)</h5>
+    <div class="card-header-clean">
+        <span class="accent">🌱</span> Crop Water Requirements (CWR)
     </div>
     <div class="card-body">
         <!-- 상단 정보 -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <strong>ETo station</strong>: {{ station_name }} ({{ station_id }})<br>
+                <strong>ET<sub>o</sub> station</strong>: {{ station_name }} ({{ station_id }})<br>
                 <strong>Rain station</strong>: {{ station_name }} ({{ station_id }})
             </div>
             <div class="col-md-6 text-end">
@@ -23,22 +23,22 @@
 
         <!-- CWR 테이블 -->
         <div class="table-responsive">
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm table-bordered table-striped">
                 <thead class="table-light">
                     <tr>
                         <th>Month</th>
                         <th>Decade</th>
                         <th>Stage</th>
-                        <th>Kc<br><small>coef</small></th>
-                        <th>ETc<br><small>mm/day</small></th>
-                        <th>ETc<br><small>mm/dec</small></th>
+                        <th>K<sub>c</sub><br><small>coef</small></th>
+                        <th>ET<sub>c</sub><br><small>mm/day</small></th>
+                        <th>ET<sub>c</sub><br><small>mm/dec</small></th>
                         <th>Eff rain<br><small>mm/dec</small></th>
                         <th>Irr. Req.<br><small>mm/dec</small></th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for row in cwr_data %}
-                    <tr class="table-warning">
+                    <tr>
                         <td>{{ row.month }}</td>
                         <td>{{ row.decade }}</td>
                         <td>{{ row.stage }}</td>
@@ -50,7 +50,7 @@
                     </tr>
                     {% endfor %}
                     <!-- 합계 행 -->
-                    <tr class="table-warning fw-bold">
+                    <tr class="fw-bold" style="background: var(--surface-muted);">
                         <td colspan="5" class="text-end">Total</td>
                         <td>{{ summary.total_etc }}</td>
                         <td>{{ summary.total_eff_rain }}</td>
@@ -64,15 +64,15 @@
 
 <!-- Irrigation Schedule 결과 카드 -->
 <div class="card">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">💧 Crop Irrigation Schedule</h5>
+    <div class="card-header-clean d-flex justify-content-between align-items-center">
+        <span><span class="accent">💧</span> Crop Irrigation Schedule</span>
         <span class="badge badge-danger">Yield red. {{ yield_reduction }}%</span>
     </div>
     <div class="card-body">
         <!-- 상단 정보 -->
         <div class="row mb-3">
             <div class="col-md-4">
-                <strong>ETo station</strong>: {{ station_name }}<br>
+                <strong>ET<sub>o</sub> station</strong>: {{ station_name }}<br>
                 <strong>Rain station</strong>: {{ station_name }}
             </div>
             <div class="col-md-4">
@@ -86,11 +86,11 @@
         </div>
 
         <!-- Options 정보 -->
-        <div class="border p-3 mb-3 bg-light rounded">
+        <div class="info-box p-3 mb-3">
             <h6>⚙️ Irrigation Settings</h6>
             <div class="row">
                 <div class="col-md-8">
-                    <strong>Timing:</strong> Irrigate at {{ options.depletion_level }}% of critical depletion<br>
+                    <strong>Timing:</strong> Irrigate at {{ options.depletion_level }}% soil moisture depletion (crop critical depletion)<br>
                     <strong>Application:</strong> {{ options.application }}<br>
                 </div>
                 <div class="col-md-4">
@@ -102,14 +102,14 @@
         <!-- Schedule 테이블 (관개 발생일만) -->
         <h6>📅 Irrigation Events</h6>
         <div class="table-responsive">
-            <table class="table table-sm table-bordered">
+            <table class="table table-sm table-bordered table-striped">
                 <thead class="table-light">
                     <tr>
                         <th>Date</th>
                         <th>Day</th>
                         <th>Stage</th>
                         <th>Rain<br><small>mm</small></th>
-                        <th>ETc<br><small>mm</small></th>
+                        <th>ET<sub>c</sub><br><small>mm</small></th>
                         <th>Depl<br><small>%</small></th>
                         <th>Net Irr<br><small>mm</small></th>
                         <th>Gr. Irr<br><small>mm</small></th>
@@ -117,7 +117,7 @@
                 </thead>
                 <tbody>
                     {% for row in irrigation_events %}
-                    <tr class="table-warning">
+                    <tr>
                         <td>{{ row.date }}</td>
                         <td>{{ row.day }}</td>
                         <td>{{ row.stage }}</td>
@@ -133,7 +133,7 @@
         </div>
 
         <!-- 하단 통계 -->
-        <div class="border p-3 bg-light rounded mt-3">
+        <div class="info-box p-3 mt-3">
             <h6>📊 Summary Statistics</h6>
             <div class="row">
                 <div class="col-md-6">
@@ -170,18 +170,185 @@
     </div>
 </div>
 
+<!-- 관개 스케줄 그래프 카드 -->
+<div class="card" id="scheduleGraphCard">
+    <div class="card-header-clean d-flex justify-content-between align-items-center">
+        <span><span class="accent">📈</span> Irrigation Scheduling Graph</span>
+        <button class="btn btn-sm btn-secondary" onclick="printChart()">🖨️ 그래프 인쇄</button>
+    </div>
+    <div class="card-body">
+        <!-- 컨트롤 -->
+        <div class="d-flex flex-wrap gap-3 mb-3">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="showDepletion" checked>
+                <label class="form-check-label" for="showDepletion">Depletion</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="showRam" checked>
+                <label class="form-check-label" for="showRam">RAM (Readily Available Moisture)</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="showTam" checked>
+                <label class="form-check-label" for="showTam">TAM (Total Available Moisture)</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="asBar">
+                <label class="form-check-label" for="asBar">as Bar</label>
+            </div>
+        </div>
+        <div style="position: relative; height: 420px;">
+            <canvas id="scheduleChart"></canvas>
+        </div>
+        <p class="mb-0 mt-2"><small class="text-muted">
+            Field Capacity(고갈 0mm)를 기준으로 토양수분 고갈량이 RAM에 도달하면 관개가 이뤄져
+            다시 포장용수량으로 회복됩니다. Days after planting = 파종(정식) 후 경과 일수.
+        </small></p>
+    </div>
+</div>
+
 <!-- 설명 카드 -->
 <div class="card">
+    <div class="card-header-clean">
+        <span class="accent">ℹ️</span> 결과 해석
+    </div>
     <div class="card-body">
-        <h5 class="card-title">ℹ️ 결과 해석</h5>
         <ul>
-            <li><strong>ETc (작물 증발산량):</strong> 작물이 실제로 필요로 하는 물의 양</li>
+            <li><strong>ET<sub>c</sub> (작물 증발산량):</strong> 작물이 실제로 필요로 하는 물의 양</li>
             <li><strong>Eff rain (유효강수량):</strong> 실제로 작물이 이용할 수 있는 강수량</li>
-            <li><strong>Irr. Req. (관개 필요량):</strong> ETc - 유효강수량</li>
+            <li><strong>Irr. Req. (관개 필요량):</strong> ET<sub>c</sub> - 유효강수량</li>
             <li><strong>Net Irr (순관개량):</strong> 토양에 실제로 필요한 물의 양</li>
             <li><strong>Gr. Irr (총관개량):</strong> 현장 효율을 고려한 실제 관개량</li>
         </ul>
         <p class="mb-0"><small>※ 계산은 FAO Irrigation and Drainage Paper No. 56 기준을 따릅니다.</small></p>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const days = {{ chart_days | tojson }};
+    const depletion = {{ chart_depletion | tojson }};
+    const ram = {{ chart_ram }};
+    const tam = {{ chart_tam }};
+
+    const canvas = document.getElementById('scheduleChart');
+    if (!canvas || typeof Chart === 'undefined' || days.length === 0) return;
+
+    const COLORS = {
+        depletion: '#e03131',
+        ram: '#8a5a1e',
+        tam: '#2f9e44',
+        fc: '#5f3dc4'
+    };
+
+    let chart = null;
+
+    function buildDatasets() {
+        const asBar = document.getElementById('asBar').checked;
+        const constLine = (value, color, label) => ({
+            label: label,
+            data: days.map(() => value),
+            type: 'line',
+            borderColor: color,
+            backgroundColor: color,
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false,
+            tension: 0
+        });
+
+        const depletionDs = asBar
+            ? {
+                label: 'Depletion',
+                data: depletion,
+                type: 'bar',
+                backgroundColor: COLORS.depletion,
+                borderColor: COLORS.depletion,
+                barPercentage: 0.9,
+                categoryPercentage: 1.0
+            }
+            : {
+                label: 'Depletion',
+                data: depletion,
+                type: 'line',
+                borderColor: COLORS.depletion,
+                backgroundColor: COLORS.depletion,
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                tension: 0
+            };
+
+        return [
+            constLine(0, COLORS.fc, 'Field Capacity'),
+            depletionDs,
+            constLine(ram, COLORS.ram, 'RAM'),
+            constLine(tam, COLORS.tam, 'TAM')
+        ];
+    }
+
+    function applyVisibility() {
+        // dataset 순서: 0=FC, 1=Depletion, 2=RAM, 3=TAM
+        chart.setDatasetVisibility(1, document.getElementById('showDepletion').checked);
+        chart.setDatasetVisibility(2, document.getElementById('showRam').checked);
+        chart.setDatasetVisibility(3, document.getElementById('showTam').checked);
+        chart.update();
+    }
+
+    function buildChart() {
+        if (chart) chart.destroy();
+        const headroom = Math.max(2, tam * 0.05);
+        chart = new Chart(canvas, {
+            type: 'bar',
+            data: { labels: days, datasets: buildDatasets() },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: {
+                        reverse: true,
+                        min: -headroom,
+                        suggestedMax: tam * 1.1,
+                        title: { display: true, text: 'Soil water retention in mm' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Days after planting' }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y} mm`
+                        }
+                    }
+                }
+            }
+        });
+        applyVisibility();
+    }
+
+    buildChart();
+
+    document.getElementById('asBar').addEventListener('change', buildChart);
+    ['showDepletion', 'showRam', 'showTam'].forEach(id => {
+        document.getElementById(id).addEventListener('change', applyVisibility);
+    });
+
+    window.printChart = function () {
+        const img = chart.toBase64Image();
+        const w = window.open('', '_blank');
+        w.document.write(
+            '<html><head><title>Irrigation Scheduling Graph</title></head>' +
+            '<body style="margin:0;padding:16px;text-align:center;">' +
+            '<img src="' + img + '" style="max-width:100%;" ' +
+            'onload="window.print();window.close();"></body></html>'
+        );
+        w.document.close();
+    };
+})();
+</script>
 {% endblock %}

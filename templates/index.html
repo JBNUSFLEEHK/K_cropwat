@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="card">
-    <div class="card-header bg-primary text-white">
-        <h4 class="mb-0">🌾 작물 관개 계획 입력</h4>
+    <div class="card-header-clean">
+        <span class="accent">🌾</span> 작물 관개 계획 입력
     </div>
 <div class="card-body">
     {% if error_message %}
@@ -26,7 +26,6 @@
                     </option>
                     {% endfor %}
                 </select>
-                <small class="form-text text-muted">재배지와 가장 가까운 기상대를 선택하세요</small>
             </div>
 
             <!-- 작물 선택 -->
@@ -44,7 +43,7 @@
 
             <!-- 토양 선택 -->
             <div class="mb-4">
-                <label for="soil" class="form-label fw-bold">🏞️ 토양 종류</label>
+                <label for="soil" class="form-label fw-bold">🟫 토양 종류</label>
                 <select class="form-select form-select-lg" id="soil" name="soil_id" required>
                     <option value="">-- 토양을 선택하세요 --</option>
                     {% for soil in soils %}
@@ -81,13 +80,16 @@
 
 <!-- 안내 사항 -->
 <div class="card">
+    <div class="card-header-clean">
+        <span class="accent">ℹ️</span> 사용 안내
+    </div>
     <div class="card-body">
-        <h5 class="card-title">ℹ️ 사용 안내</h5>
         <ul>
             <li>기상 관측소는 재배지와 가장 가까운 곳을 선택하세요</li>
             <li>재배 기간은 실제 파종일과 수확 예정일을 입력하세요</li>
             <li>계산 결과는 FAO-56 표준 방법을 기반으로 합니다</li>
-            <li>과거 기상 데이터를 사용하므로 재배 기간의 기상 데이터가 있어야 합니다</li>
+            <li>과거 기상 데이터를 사용하므로 당일 또는 미래 날짜는 입력할 수 없습니다 (데이터 미제공으로 오류 발생)</li>
+            <li>이미 지난 재배 기간의 날짜를 입력하면 해당 기간의 관개 계획을 참고용으로 확인할 수 있습니다</li>
         </ul>
     </div>
 </div>
