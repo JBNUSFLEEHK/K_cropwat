@@ -322,7 +322,6 @@
 
     function buildChart() {
         if (chart) chart.destroy();
-        const headroom = Math.max(2, tamMax * 0.05);
         chart = new Chart(canvas, {
             type: 'bar',
             data: { labels: days, datasets: buildDatasets() },
@@ -334,7 +333,7 @@
                 scales: {
                     y: {
                         reverse: true,
-                        min: -headroom,
+                        min: -5,
                         suggestedMax: tamMax * 1.1,
                         title: { display: true, text: 'Soil water retention in mm' }
                     },
