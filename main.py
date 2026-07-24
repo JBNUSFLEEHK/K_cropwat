@@ -15,6 +15,13 @@ from services.cropwat.irrigation_scheduler import IrrigationScheduler
 app = FastAPI(title="CROPWAT Web Service")
 templates = Jinja2Templates(directory="templates")
 
+# 관개 방식별 현장 적용 효율 (FAO 대표값): key -> (표시명, 효율 %)
+IRRIGATION_METHODS = {
+    'drip': ('점적(드립)', 90),
+    'sprinkler': ('스프링클러', 75),
+    'surface': ('지표관개(고랑·담수)', 55),
+}
+
 
 def load_json_data(filename: str):
     """JSON 데이터 로드"""
@@ -54,6 +61,7 @@ async def calculate(
         soil_id: str = Form(...),
         planting_date: str = Form(...),
         harvest_date: str = Form(...),
+        irrigation_method: str = Form(...),  # 관개 방식 (필수)
         field_area: str = Form("")  # 재배 면적 (m², 선택 입력)
 ):
     """CROPWAT 계산 실행"""
@@ -128,7 +136,12 @@ async def calculate(
         # 5. 관개 스케줄 계산
         rainfall_series = [w['rainfall'] for w in weather_data]
 
-        scheduler = IrrigationScheduler(crop, soil)
+        # 관개 방식 → (표시명, 현장 효율 %) 매핑
+        method_name, method_eff = IRRIGATION_METHODS.get(
+            irrigation_method, IRRIGATION_METHODS['sprinkler']
+        )
+
+        scheduler = IrrigationScheduler(crop, soil, options={'field_efficiency': method_eff})
         schedule = scheduler.calculate_irrigation_schedule(
             etc_series=etc_results,
             rainfall_series=rainfall_series,
@@ -173,7 +186,8 @@ async def calculate(
             "options": {
                 "depletion_level": round(scheduler.depletion_fraction * 100),
                 "application": "Refill to field capacity",
-                "field_efficiency": 70
+                "field_efficiency": method_eff,
+                "method_name": method_name
             }
         })
 
