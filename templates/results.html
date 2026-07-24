@@ -199,10 +199,15 @@
         <div style="position: relative; height: 420px;">
             <canvas id="scheduleChart"></canvas>
         </div>
+        <!-- 긴 재배기간용 가로 스크롤 (라벨이 겹칠 때만 표시) -->
+        <div id="chartScrollWrap" class="mt-2" style="display: none;">
+            <input type="range" class="form-range" id="chartScroll" min="0" value="0" step="1">
+            <div class="text-center"><small class="text-muted" id="chartScrollLabel"></small></div>
+        </div>
         <p class="mb-0 mt-2"><small class="text-muted">
-            Field Capacity(고갈 0mm)를 기준으로 토양수분 고갈량이 RAM에 도달하면 관개가 이뤄져
-            다시 포장용수량으로 회복됩니다. RAM·TAM은 뿌리가 자라는 초기에 증가하다 발육기 끝에서
-            평탄해집니다. Days after planting = 재배 시작 후 경과 일수.
+            Field Capacity(고갈 0mm)를 기준으로 토양수분 고갈량이 RAM에 도달하면 관개가 이뤄져 다시 포장용수량으로 회복됩니다.<br>
+            RAM·TAM은 뿌리가 자라는 초기에 증가하다 발육기 끝에서 평탄해집니다.<br>
+            Days after planting = 파종 후 경과 일수.
         </small></p>
     </div>
 </div>
@@ -319,7 +324,8 @@
                         title: { display: true, text: 'Soil water retention in mm' }
                     },
                     x: {
-                        title: { display: true, text: 'Days after planting' }
+                        title: { display: true, text: 'Days after planting' },
+                        ticks: { maxRotation: 0, minRotation: 0, autoSkip: true }
                     }
                 },
                 plugins: {
@@ -333,9 +339,40 @@
             }
         });
         applyVisibility();
+        applyWindow(currentStart);
+    }
+
+    // ── 긴 재배기간용 가로 스크롤(윈도우) ──
+    const WINDOW = 45;                 // 한 화면에 보여줄 일수
+    const windowed = days.length > WINDOW;
+    let currentStart = 0;              // 현재 창의 시작 인덱스
+
+    function applyWindow(start) {
+        if (!windowed || !chart) return;
+        const maxStart = days.length - WINDOW;
+        currentStart = Math.max(0, Math.min(start, maxStart));
+        const endIdx = currentStart + WINDOW - 1;
+        chart.options.scales.x.min = days[currentStart];
+        chart.options.scales.x.max = days[endIdx];
+        chart.update('none');
+        const label = document.getElementById('chartScrollLabel');
+        if (label) label.textContent = `Day ${days[currentStart]} – ${days[endIdx]} / ${days[days.length - 1]}`;
+    }
+
+    function setupScroll() {
+        const wrap = document.getElementById('chartScrollWrap');
+        const slider = document.getElementById('chartScroll');
+        if (!windowed) { if (wrap) wrap.style.display = 'none'; return; }
+        wrap.style.display = 'block';
+        slider.min = 0;
+        slider.max = days.length - WINDOW;
+        slider.value = 0;
+        slider.addEventListener('input', () => applyWindow(parseInt(slider.value, 10)));
+        applyWindow(0);
     }
 
     buildChart();
+    setupScroll();
 
     document.getElementById('asBar').addEventListener('change', buildChart);
     ['showDepletion', 'showRam', 'showTam'].forEach(id => {
