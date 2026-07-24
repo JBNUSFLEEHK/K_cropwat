@@ -53,7 +53,8 @@ async def calculate(
         crop_id: str = Form(...),
         soil_id: str = Form(...),
         planting_date: str = Form(...),
-        harvest_date: str = Form(...)
+        harvest_date: str = Form(...),
+        field_area: str = Form("")  # 재배 면적 (m², 선택 입력)
 ):
     """CROPWAT 계산 실행"""
 
@@ -142,6 +143,14 @@ async def calculate(
         # 7. 관개 발생일만 필터링
         irrigation_events = [day for day in schedule if day['irrigation'] > 0]
 
+        # 7-1. 재배 면적 파싱 (선택 입력, m²). 유효하지 않으면 None
+        try:
+            area_m2 = float(field_area)
+            if area_m2 <= 0:
+                area_m2 = None
+        except (ValueError, TypeError):
+            area_m2 = None
+
         # 8. 결과 페이지 렌더링
         return templates.TemplateResponse("results.html", {
             "request": request,
@@ -154,6 +163,7 @@ async def calculate(
             "cwr_data": cwr_data,
             "irrigation_events": irrigation_events,
             "summary": summary,
+            "area_m2": area_m2,  # None이면 면적 환산 표시 안 함
             # 관개 스케줄 그래프용 데이터 (뿌리 생장에 따라 RAM/TAM은 일자별로 변함)
             "chart_days": [row['day'] for row in schedule],
             "chart_depletion": [row['depletion_before'] for row in schedule],

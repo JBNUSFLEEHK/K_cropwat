@@ -156,6 +156,31 @@
                     <strong>Efficiency rain:</strong> {{ summary.efficiency_rain }}%
                 </div>
             </div>
+
+            {% if area_m2 %}
+            <hr>
+            <h6 class="mb-2">📐 입력 면적 기준 실제 물량 ({{ "{:,.0f}".format(area_m2) }} m²)</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Total irrigation:</strong>
+                    {{ "{:,.0f}".format(summary.total_irrigation * area_m2) }} L
+                    <span class="text-muted">({{ "%.1f"|format(summary.total_irrigation * area_m2 / 1000) }} 톤)</span><br>
+                    <strong>Actual water use (ET<sub>c</sub>):</strong>
+                    {{ "{:,.0f}".format(summary.total_etc * area_m2) }} L
+                </div>
+                <div class="col-md-6">
+                    <strong>Effective rainfall:</strong>
+                    {{ "{:,.0f}".format(summary.total_eff_rain * area_m2) }} L<br>
+                    <strong>Total rainfall:</strong>
+                    {{ "{:,.0f}".format(summary.total_rain * area_m2) }} L
+                </div>
+            </div>
+            <p class="mb-0 mt-3 p-3 rounded" style="background:#eaf1f8; border:1px solid #cfe0f3; color:#1b3a6b;">
+                입력하신 <strong>{{ "{:,.0f}".format(area_m2) }} m²</strong> 밭에는 재배기간 {{ summary.total_days }}일 동안
+                약 <strong>{{ "{:,.0f}".format(summary.total_irrigation * area_m2) }} L</strong>
+                ({{ "%.1f"|format(summary.total_irrigation * area_m2 / 1000) }} 톤)의 관개가 필요합니다.
+            </p>
+            {% endif %}
         </div>
 
         <!-- 관개 스케줄 그래프 (같은 카드 내 하위 섹션) -->
